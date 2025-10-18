@@ -8,7 +8,7 @@ API REST para gestión de órdenes de logística desarrollada con Node.js, Expre
 
 ## Deploy
 
-**URL:** [ ]
+**URL:** [ https://api-logistica-chi.vercel.app]
 
 ---
 
