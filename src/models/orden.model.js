@@ -13,14 +13,11 @@ const orderSchema = new mongoose.Schema({
   },
   peso: {
     type: Number,
-    required: [true, "El peso del paquete es obligatorio"],
-    min: [0.1, "El peso debe ser mayor a 0 kg"],
-    default: 1,
+    required: [true, "El peso es obligatorio"],
   },
   costo: {
     type: Number,
-    required: [true, "El costo logístico es obligatorio"],
-    default: 1500, // base mínima
+    default: 0,
   },
   fecha_creacion: {
     type: Date,
@@ -37,23 +34,43 @@ const orderSchema = new mongoose.Schema({
   },
 });
 
-// 🧮 Middleware para calcular el costo antes de guardar
+// Cálculo automático del costo logístico 
 orderSchema.pre("save", function (next) {
-  if (!this.isModified("destino") && !this.isModified("peso") && this.costo) {
-    return next();
-  }
+  const tarifas = {
+    "Buenos Aires": 10000,
+    "Catamarca": 8600,
+    "Chaco": 8700,
+    "Chubut": 9500,
+    "Córdoba": 9000,
+    "Corrientes": 8800,
+    "Entre Ríos": 8900,
+    "Formosa": 9000,
+    "Jujuy": 9200,
+    "La Pampa": 8800,
+    "La Rioja": 8500,
+    "Mendoza": 9400,
+    "Misiones": 9700,
+    "Neuquén": 9400,
+    "Río Negro": 9300,
+    "Salta": 9200,
+    "San Juan": 9100,
+    "San Luis": 9000,
+    "Santa Cruz": 10200,
+    "Santa Fe": 8800,
+    "Santiago del Estero": 9100,
+    "Tierra del Fuego": 11000,
+    "Tucumán": 8700
+  };
 
-  let distancia = 100; // default
-  const destinoLower = this.destino.toLowerCase();
 
-  if (destinoLower.includes("buenos aires")) distancia = 900;
-  else if (destinoLower.includes("cordoba")) distancia = 600;
-  else if (destinoLower.includes("la rioja")) distancia = 400;
-  else if (destinoLower.includes("catamarca")) distancia = 500;
-  else if (destinoLower.includes("rosario")) distancia = 800;
+  const destinoNormalizado =
+    this.destino.charAt(0).toUpperCase() + this.destino.slice(1).toLowerCase();
 
-  const base = 1500;
-  this.costo = base + distancia * 50 + this.peso * 100;
+  const base = tarifas[destinoNormalizado] || 10000;
+  const peso = parseFloat(this.peso) || 1;
+  const costoPeso = peso * 600;
+
+  this.costo = base + costoPeso;
   next();
 });
 
