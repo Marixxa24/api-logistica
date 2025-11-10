@@ -3,29 +3,13 @@ import Order from "../models/orden.model.js";
 // Crear una orden
 export const crearOrden = async (req, res) => {
   try {
-    const { destino, contenido, estado, costo } = req.body;
-
-    // Si no se envía costo, calculamos uno básico según destino
-    const calcularCosto = (destino) => {
-      switch (destino?.toLowerCase()) {
-        case "buenos aires":
-          return 5000;
-        case "cordoba":
-          return 4000;
-        case "la rioja":
-          return 3500;
-        case "catamarca":
-          return 3000;
-        default:
-          return 2500;
-      }
-    };
+    const { destino, contenido, peso, estado } = req.body;
 
     const nuevaOrden = new Order({
       destino,
       contenido,
+      peso,   
       estado,
-      costo: costo || calcularCosto(destino),
     });
 
     await nuevaOrden.save();
